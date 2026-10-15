@@ -42,7 +42,7 @@ from dataclasses import dataclass, field
 
 from entites import normaliser
 from hetionet_utils import METAEDGES
-from plans import INTENTIONS, executer
+from plans import INTENTIONS, executer, intermediaires
 
 # --- statuts et poids ---------------------------------------------------------
 SOUTENUE, PARTIELLE, NON_SOUTENUE, NON_VERIFIABLE, CONTRADICTOIRE = (
@@ -201,6 +201,20 @@ class Extracteur:
             for m in mentions:
                 x = m.candidats.get(plan.type_reponse)
                 if x and x not in plan.emplacements.values():
+                    if plan.intention == "drugs_for_resembling":
+                        # « X traite une maladie D' qui ressemble à D » : D' n'est pas nommée dans une
+                        # liste ; on prend D' dans le graphe si elle existe, sinon une voisine de D
+                        # (l'affirmation sera alors non soutenue).
+                        d = plan.emplacements.get("D")
+                        voisines = sorted(self.g.successeurs(d, "DrD")) if d else []
+                        inter = sorted(intermediaires(plan, self.g, x)) if d else []
+                        d2 = (inter or voisines or [None])[0]
+                        if d2 is not None:
+                            res.append(Affirmation(x, "CtD", d2, nie_phrase, brute.strip(), cits, implicite=True,
+                                                   exacte=m.exact, textes=(m.texte, "")))
+                            res.append(Affirmation(d, "DrD", d2, False, brute.strip(), cits, implicite=True,
+                                                   exacte=True, textes=("", "")))
+                        continue
                     for rel, sens, nom in INTENTIONS[plan.intention][2]:
                         if nom not in plan.emplacements:
                             continue

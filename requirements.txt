@@ -3,4 +3,5 @@ pandas==2.3.2
 scipy==1.15.2
 defusedxml==0.7.1
 problog==2.3.0
+requests==2.34.2
 streamlit==1.65.0

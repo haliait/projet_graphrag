@@ -23,6 +23,19 @@ Référence : les plans canoniques sont fournis dans `questions.json`. Un oracle
 
 La pertinence des passages, l'exactitude des réponses générées, leur fidélité, la détection, l'escalade et le temps expert restent **non mesurés** dans cette branche. Les tableaux vides d'annotation sont des tâches restantes, pas des résultats.
 
+## État de l'intégration (15 octobre 2026)
+
+| Point ci-dessus | État |
+|---|---|
+| 1. Jeu de développement séparé | Fait pour la brique 3 : `brique3_validation/calibration.py` génère 150 questions depuis le graphe, entités du test exclues. Un jeu inédit annoté à la main reste à faire. |
+| 2. Annotations humaines | Reste à faire (`passage_judgments.csv`). |
+| 3. Même générateur pour les deux systèmes | Fait : `generation.py`, gabarit extractif déclaré (preuves [Tn] pour GraphRAG, phrases des passages [Pn] pour le RAG) ; Ollama branché, pas de repli silencieux. |
+| 4. Brique 2 : détection et fidélité | Fait en expérience synthétique séparée : `brique2_experience.py` (erreurs injectées par `llm_simule.py`, fausses alertes, accord Python / ProbLog). |
+| 5. Brique 3 : calibration, escalade, temps expert | Fait : calibration sur le développement, `lancer.py`, `experiences.py`, modèle de temps dans `config.py`. |
+| 6. Comparaison RAG / GraphRAG, erreurs par brique | Fait avec le gabarit (`experiences.py`, E3 et E5/E6) ; à refaire avec Ollama pour un vrai LLM. |
+
+Résultats de la dernière exécution : voir le README.
+
 ## Fiche de cadrage proposée
 
 **Problème :** relier des faits médicaux publics et montrer les preuves avant génération. **Hypothèse :** les jointures typées améliorent la récupération de preuves composées par rapport au texte seul. **Périmètre :** anglais, six relations Hetionet, deux sauts, corpus MedQuAD fixe, absence de données patient. **Livrable Ahmed :** cette brique, son contrat JSON et son évaluation de recherche.

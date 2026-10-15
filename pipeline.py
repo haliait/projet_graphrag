@@ -8,7 +8,7 @@ Options : --generateur ollama|gabarit   --modele qwen2.5:3b   --limite N (test r
 import argparse, json, time
 from dataclasses import asdict
 from cli import construire
-from entites import normaliser
+from entites import Dictionnaire, normaliser
 from plans import analyser_question
 from rag_classique import RAGClassique
 from brique2_verification_regles import Verificateur
@@ -32,7 +32,8 @@ def injecter_synonymes(dico, g, synonymes):
 
 
 def plan_pour_verification(ctx, texte, dico):
-    """Le RAG classique n'a pas de plan : on analyse la question pour pouvoir vérifier la réponse."""
+    """Le RAG classique n'a pas de plan : on analyse la question (comme le ferait un LLM) pour pouvoir
+    générer la réponse extractive et la vérifier. Aucun fait du graphe n'entre dans le contexte du RAG."""
     if ctx.plan.intention:
         return ctx.plan
     try:
@@ -99,13 +100,17 @@ def main():
     print("Chargement du graphe et de l'index MedQuAD…")
     g, recherche_graphe = construire(mode="graphrag")
     dico = recherche_graphe.dico
+    # La brique 1 garde un repérage strict (pas de correspondance approchée) ; la brique 2 lit des
+    # réponses de LLM, avec synonymes et fautes de frappe : elle a son propre dictionnaire tolérant.
+    dico_verif = Dictionnaire(g, approche=True)
     memoire_b2 = None
     if args.avec_memoire:
         memoire = Memoire()
         injecter_synonymes(dico, g, memoire.d["synonymes"])
+        injecter_synonymes(dico_verif, g, memoire.d["synonymes"])
         memoire_b2 = MemoirePourBrique2(memoire)
     recherche = recherche_graphe if args.systeme == "graphrag" else RAGClassique(recherche_graphe.index)
-    verificateur = Verificateur(g, dico, memoire=memoire_b2)
+    verificateur = Verificateur(g, dico_verif, memoire=memoire_b2)
 
     questions = charger_questions()
     if args.limite:
@@ -117,8 +122,8 @@ def main():
         try:
             ctx = recherche.rechercher(texte)
             payload = ctx.exporter(g)
-            reponse, generateur = generer(payload, ctx, g, args.generateur, args.modele)
             plan = plan_pour_verification(ctx, texte, dico)
+            reponse, generateur = generer(payload, ctx, g, args.generateur, args.modele, plan, dico)
             rapport = verificateur.verifier(reponse, plan, ctx)
             o = vers_objet(q, args.formulation, args.systeme, texte, payload, plan,
                            reponse, generateur, rapport, g)

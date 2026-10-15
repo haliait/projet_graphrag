@@ -38,7 +38,7 @@ CAS = [
 ]
 
 if __name__ == "__main__":
-    g = charger_graphe(); d = Dictionnaire(g); ex = Extracteur(g, d)
+    g = charger_graphe(); d = Dictionnaire(g, approche=True); ex = Extracteur(g, d)  # comme pipeline.py
     ok = tot_att = tot_trouve = vp = 0
     for q, rep, attendu in CAS:
         affs, _, _ = ex.extraire(rep, analyser_question(q, d))

@@ -42,6 +42,18 @@ def regles_strictes(o):
         return "Affirmation non soutenue par le graphe", 1
     if "element_non_conforme" in drapeaux:
         return "Élément ne respectant pas toutes les contraintes (R10)", 1
+    # Drapeaux de la brique 2 qui signalent un doute même quand chaque affirmation est soutenue
+    if "candidats_proches" in drapeaux:
+        return "Réponse possiblement incomplète : candidats proches dans le graphe (R12)", 1
+    if "non_verifiable" in drapeaux or any(a.get("statut") == "NON_VERIFIABLE" for a in affs):
+        return "Affirmation non vérifiable : la source ne couvre pas ce fait (R5/R6)", 1
+    if "partielle" in drapeaux or any(a.get("statut") == "PARTIELLE" for a in affs):
+        return "Affirmation seulement partiellement soutenue (R2)", 1
+    if "omissions" in drapeaux:
+        return "Réponse incomplète : éléments du graphe absents de la réponse (R11)", 1
+    if "hors_contexte" in drapeaux and any(a.get("dans_contexte") is False and a.get("statut") != "SOUTENUE"
+                                           for a in affs):
+        return "Affirmation absente du contexte fourni au générateur (R9)", 1
     if o.get("abstention"):
         return "Le générateur s'abstient de répondre", 2
     if not affs:
