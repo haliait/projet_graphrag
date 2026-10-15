@@ -2,3 +2,4 @@ numpy==2.2.3
 pandas==2.3.2
 scipy==1.15.2
 defusedxml==0.7.1
+problog==2.3.0
