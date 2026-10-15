@@ -1,0 +1,97 @@
+{
+  "questions": 20,
+  "multi_hop": 11,
+  "runs": 160,
+  "setup_seconds": 4.093510099999548,
+  "scope": "retrieval_only_not_clinical_accuracy",
+  "systems": {
+    "graphrag": {
+      "plan_correct": {
+        "mean": 0.975,
+        "n": 40
+      },
+      "graph_evidence_recall": {
+        "mean": 0.96875,
+        "n": 32
+      },
+      "graph_trace_valid": {
+        "mean": 1,
+        "n": 31
+      },
+      "latency_ms": {
+        "mean": 2.9595500001960318,
+        "n": 40
+      },
+      "context_characters": {
+        "mean": 2557.625,
+        "n": 40
+      }
+    },
+    "rag": {
+      "plan_correct": {
+        "mean": null,
+        "n": 0
+      },
+      "graph_evidence_recall": {
+        "mean": null,
+        "n": 0
+      },
+      "graph_trace_valid": {
+        "mean": null,
+        "n": 0
+      },
+      "latency_ms": {
+        "mean": 2.1699200000512064,
+        "n": 40
+      },
+      "context_characters": {
+        "mean": 2216.575,
+        "n": 40
+      }
+    },
+    "sans_synonymes": {
+      "plan_correct": {
+        "mean": 0.55,
+        "n": 40
+      },
+      "graph_evidence_recall": {
+        "mean": 0.6354166666666666,
+        "n": 32
+      },
+      "graph_trace_valid": {
+        "mean": 1,
+        "n": 24
+      },
+      "latency_ms": {
+        "mean": 2.6723100004346634,
+        "n": 40
+      },
+      "context_characters": {
+        "mean": 2544.5,
+        "n": 40
+      }
+    },
+    "un_saut": {
+      "plan_correct": {
+        "mean": 0.975,
+        "n": 40
+      },
+      "graph_evidence_recall": {
+        "mean": 0.375,
+        "n": 32
+      },
+      "graph_trace_valid": {
+        "mean": 1,
+        "n": 12
+      },
+      "latency_ms": {
+        "mean": 1.6323700000612007,
+        "n": 40
+      },
+      "context_characters": {
+        "mean": 2262.975,
+        "n": 40
+      }
+    }
+  }
+}

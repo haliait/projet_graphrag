@@ -1,0 +1,24 @@
+{
+  "hetionet_revision": "8a6cc0c5604d0e2908786e4de38af67b8e46ee4a",
+  "medquad_revision": "577bd37b96c02d1833b2c9eed2de9f96964e96cb",
+  "files": {
+    "hetionet-v1.0-nodes.tsv": {
+      "url": "https://raw.githubusercontent.com/hetio/hetionet/8a6cc0c5604d0e2908786e4de38af67b8e46ee4a/hetnet/tsv/hetionet-v1.0-nodes.tsv",
+      "sha256": "3ad9eb86c031df8bc7d5efefa6edc93562182eb9a6a71e5129d3f18b9d42c50e",
+      "bytes": 2509984
+    },
+    "hetionet-v1.0-edges.sif.gz": {
+      "url": "https://media.githubusercontent.com/media/hetio/hetionet/8a6cc0c5604d0e2908786e4de38af67b8e46ee4a/hetnet/tsv/hetionet-v1.0-edges.sif.gz",
+      "sha256": "611f0411ac666be4e0270e54bbca67407e14720bfc3099311f0f5eec25c5a947",
+      "bytes": 12401407
+    },
+    "MedQuAD.zip": {
+      "url": "https://codeload.github.com/abachaa/MedQuAD/zip/577bd37b96c02d1833b2c9eed2de9f96964e96cb",
+      "sha256": "161d948f8ce8f82accca1f5769a512dff2a01af2b3004d48f2b3da2758a38a09",
+      "bytes": 16953181
+    }
+  },
+  "nodes": 8206,
+  "edges": 145018,
+  "passages_sha256": "79e95a337280b9df6f3bad31bf4a320893b878aac77b757a71ca0d454f2e53d9"
+}
