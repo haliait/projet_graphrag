@@ -11,3 +11,5 @@ __pycache__/
 *.key
 *.pkl
 *.pickle
+brique3_validation/*.db
+brique3_validation/memoire_expert.json
