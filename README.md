@@ -11,7 +11,7 @@ réponse contre le graphe, et transmettre à un expert les réponses peu sûres.
 | 1. Recherche par graphe | Ahmed Ben Rejeb | `brique1_recherche_graphe.py`, `plans.py`, `entites.py`, `hetionet_utils.py`, `medquad_utils.py`, `rag_classique.py`, `cli.py`, `evaluation.py`, `tests/` |
 | 2. Vérification par règles | Enzo Ferrier | `brique2_verification_regles.py`, `brique2_problog.py`, `regles_verification.pl`, `tests_extraction.py`, `brique2_experience.py` |
 | 3. Validation humaine | Halima Ait Hamou | `brique3_validation/` (confiance, file, mémoire, interface Streamlit, expert simulé, calibration, expériences) |
-| Commun | — | `pipeline.py` (enchaînement), `generation.py` (Ollama ou gabarit), `llm_simule.py` (erreurs injectées, expériences seulement), `preparer_donnees.py`, `questions.json` |
+| Commun | — | `pipeline.py` (enchaînement), `demo.py` (démonstration pas à pas), `generation.py` (Ollama ou gabarit), `llm_simule.py` (erreurs injectées, expériences seulement), `preparer_donnees.py`, `questions.json` |
 
 Le prototype est local et fonctionne sur CPU, sans clé API ni service payant. Les seuls accès réseau
 sont l'installation, la préparation explicite des données et, en option, un Ollama local. Le résultat
@@ -56,6 +56,8 @@ $py = ".\.venv\Scripts\python.exe"
 & $py -m brique3_validation.experiences --passe1 resultats/b3_pipeline_graphrag_question_gabarit_passe1.json --passe2 resultats/b3_pipeline_graphrag_paraphrase_memoire_gabarit_passe2.json --rag resultats/b3_pipeline_rag_question_gabarit_passe1.json
 # Interface de l'expert
 & .\.venv\Scripts\streamlit.exe run brique3_validation/interface.py
+# Démonstration d'une question, brique par brique (--systeme rag, --generateur ollama, --file)
+& $py demo.py "Which drugs that treat rheumatoid arthritis are known to cause hepatotoxicity?"
 ```
 
 Avec un vrai petit LLM : installer [Ollama](https://ollama.com), `ollama pull qwen2.5:3b`, puis
@@ -129,9 +131,31 @@ brique 2 (règle R8).
   graphe incomplet) sont escaladées ; sur les paraphrases avec mémoire, l'escalade passe de 25 % à
   10 % et le temps expert de 318 s à 140 s.
 
+## Résultats avec un vrai LLM (16 octobre 2026, Ollama, qwen2.5:3b sur CPU)
+
+Même chaîne, mêmes questions et paramètres ; seul le générateur change (`--generateur ollama`).
+
+| Mesure (20 questions) | GraphRAG gabarit | RAG gabarit | GraphRAG Ollama | RAG Ollama |
+|---|---:|---:|---:|---:|
+| Réponses exactes avant validation | 85 % | 15 % | 20 % | 0 % |
+| Exactes sur deux sauts (11) | 10 / 11 | 1 / 11 | 2 / 11 | 0 / 11 |
+| Affirmations présentes dans le contexte | 140 / 140 | 7 / 15 | 161 / 192 | 12 / 48 |
+| Taux d'escalade | 25 % | 100 % | 90 % | 95 % |
+| Erreurs transmises sans escalade | 0 | 0 | 0 | 1 (Q08) |
+| Temps expert simulé | 318 s | 1 720 s | 2 454 s | 2 470 s |
+| Paraphrases avec mémoire : escalade / temps | 10 % / 140 s | — | 15 % / 456 s | — |
+
+Lecture : aucune erreur de GraphRAG n'est livrée, mais l'escalade monte. Sur les 16 réponses jugées
+fausses, 6 sont de bonnes listes mal lues par l'extraction de la brique 2 (sujet pris sur un effet ou
+une classe : « the drugs known to cause hepatotoxicity for treating RA are… », listes après « are »),
+8 sont de vraies erreurs du LLM (oublis, ajouts hors contexte, contradictions), toutes escaladées, et
+3 questions oui/non restent sans conclusion. Côté RAG, Q08 est livrée fausse : la réponse ne dit ni
+oui ni non, et aucune règle ne le signale. Corrections identifiées : extraction robuste à la prose
+libre, drapeau « question oui/non non traitée ».
+
 Limites : la référence est le graphe (sauf ajouts sourcés de `questions.json`) et la vérification
-juge contre ce même graphe ; le jeu de test est petit et connu du code ; le LLM simulé n'est pas un
-vrai LLM. Voir [docs/EVALUATION.md](docs/EVALUATION.md).
+juge contre ce même graphe ; le jeu de test est petit et connu du code ; un seul petit LLM, lancé une
+fois. Voir [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Sources
 
